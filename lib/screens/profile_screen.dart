@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Text('Raja Vibe', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text('User', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         SizedBox(height: 6),
                         Text('raja.vibe@email.com', style: TextStyle(color: Colors.black54)),
                         SizedBox(height: 6),

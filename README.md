@@ -5,9 +5,9 @@ Aplikasi Tracking uang digital - Projek PSAS
 https://github.com/AvilaSavero/UangJajanTracker.git
 
 # Nama Anggota
-- Arga Miftachul Alifta
-- Avila Saver Iman
-- Constantine Reiner Simanjuntak
-- Rafif Arga Pratama
+- Arga Miftachul Alifta (04)
+- Avila Saver Iman (05)
+- Constantine Reiner Simanjuntak (07)
+- Rafif Arga Pratama (24)
 
 
