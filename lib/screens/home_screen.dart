@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final double _spendingLimit = 1000000;
   final double _balance = 2450000;
 
-  final List<_TransactionData> _transactions = const [
+  late List<_TransactionData> _transactions = [
     _TransactionData('Makan Siang', 20000, false),
     _TransactionData('Top Up', 50000, true),
     _TransactionData('Jajan Online', 15000, false),
@@ -24,6 +24,22 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   int _selectedIndex = 0;
+
+  void _addTransaction(dynamic data) {
+    setState(() {
+      if (data is Map) {
+        _transactions.insert(
+          0,
+          _TransactionData(
+            data['title'] as String,
+            data['amount'] as double,
+            data['isIncome'] as bool,
+            dateTime: DateTime.now(),
+          ),
+        );
+      }
+    });
+  }
 
   double get _totalIncome => _transactions
       .where((item) => item.isIncome)
@@ -54,25 +70,64 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatRupiah(double value) {
-    final formatted = value.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
+    final formatted = value
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
     return 'Rp $formatted';
   }
 
-  void _onNavTap(int index) {
-    if (index == 0) {
-      setState(() {
-        _selectedIndex = 0;
-      });
-      return;
+  String _formatTransactionTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final txDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final time = '$hour:$minute';
+
+    if (txDate == today) {
+      return 'Hari ini • $time';
+    } else if (txDate == today.subtract(const Duration(days: 1))) {
+      return 'Kemarin • $time';
+    } else {
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year} • $time';
     }
+  }
+
+  void _onNavTap(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
     if (index == 1) {
       Navigator.pushNamed(context, StatisticsScreen.routeName);
     } else if (index == 2) {
-      Navigator.pushNamed(context, AddTransactionScreen.routeName);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddTransactionScreen(
+            onTransactionAdded: _addTransaction,
+          ),
+        ),
+      );
     } else if (index == 3) {
-      Navigator.pushNamed(context, SettingsScreen.routeName);
+      // Index 3 adalah Riwayat (History)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => _HistoryScreen(transactions: _transactions),
+        ),
+      );
     } else if (index == 4) {
-      Navigator.pushNamed(context, ProfileScreen.routeName);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(
+            transactionCount: _transactions.length,
+            spendingLimit: _spendingLimit,
+          ),
+        ),
+      );
     }
   }
 
@@ -84,7 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () => Navigator.pushNamed(context, SettingsScreen.routeName),
+            onPressed: () =>
+                Navigator.pushNamed(context, SettingsScreen.routeName),
           ),
         ],
       ),
@@ -115,14 +171,25 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Statistik'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Tambah'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart), label: 'Statistik'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline), label: 'Tambah'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, AddTransactionScreen.routeName),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddTransactionScreen(
+                onTransactionAdded: _addTransaction,
+              ),
+            ),
+          );
+        },
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -140,16 +207,20 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  Text('Hai, Raja Vibe', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text('Hai, Raja Vibe',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
-                  Text('Lihat ringkasan pengeluaran dan limit hari ini.', style: TextStyle(color: Colors.black54)),
+                  Text('Lihat ringkasan pengeluaran dan limit hari ini.',
+                      style: TextStyle(color: Colors.black54)),
                 ],
               ),
             ),
             CircleAvatar(
               radius: 26,
               backgroundColor: Colors.green.shade100,
-              child: const Icon(Icons.account_circle, size: 36, color: Colors.green),
+              child: const Icon(Icons.account_circle,
+                  size: 36, color: Colors.green),
             ),
           ],
         ),
@@ -166,11 +237,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Saldo Anda', style: TextStyle(color: Colors.white70, fontSize: 16)),
+            const Text('Saldo Anda',
+                style: TextStyle(color: Colors.white70, fontSize: 16)),
             const SizedBox(height: 8),
-            Text(_formatRupiah(_balance), style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.bold)),
+            Text(_formatRupiah(_balance),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 34,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            const Text('Ringkasan mingguan', style: TextStyle(color: Colors.white70, fontSize: 14)),
+            const Text('Ringkasan mingguan',
+                style: TextStyle(color: Colors.white70, fontSize: 14)),
             const SizedBox(height: 18),
             Container(
               height: 96,
@@ -179,7 +256,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Center(
-                child: Text('Grafik kecil placeholder', style: TextStyle(color: Colors.white70)),
+                child: Text('Grafik kecil placeholder',
+                    style: TextStyle(color: Colors.white70)),
               ),
             ),
           ],
@@ -196,14 +274,20 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Ringkasan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Ringkasan',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _summaryItem('Pemasukan', _formatRupiah(_totalIncome), Colors.green),
-                _summaryItem('Pengeluaran', _formatRupiah(_totalExpense), Colors.red),
-                _summaryItem('Tabungan', _formatRupiah(_savedAmount < 0 ? 0 : _savedAmount), Colors.blue),
+                _summaryItem(
+                    'Pemasukan', _formatRupiah(_totalIncome), Colors.green),
+                _summaryItem(
+                    'Pengeluaran', _formatRupiah(_totalExpense), Colors.red),
+                _summaryItem(
+                    'Tabungan',
+                    _formatRupiah(_savedAmount < 0 ? 0 : _savedAmount),
+                    Colors.blue),
               ],
             ),
           ],
@@ -220,7 +304,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Batas Pengeluaran', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Batas Pengeluaran',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,17 +313,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Limit Anda', style: TextStyle(color: Colors.black54)),
+                    const Text('Limit Anda',
+                        style: TextStyle(color: Colors.black54)),
                     const SizedBox(height: 4),
-                    Text(_formatRupiah(_spendingLimit), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(_formatRupiah(_spendingLimit),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('Terpakai', style: TextStyle(color: Colors.black54)),
+                    const Text('Terpakai',
+                        style: TextStyle(color: Colors.black54)),
                     const SizedBox(height: 4),
-                    Text('${(_limitUsage * 100).toStringAsFixed(0)}%', style: TextStyle(fontWeight: FontWeight.bold, color: _limitColor)),
+                    Text('${(_limitUsage * 100).toStringAsFixed(0)}%',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: _limitColor)),
                   ],
                 ),
               ],
@@ -254,7 +344,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(_limitStatus, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _limitColor)),
+            Text(_limitStatus,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _limitColor)),
           ],
         ),
       ),
@@ -265,36 +359,57 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Kategori Cepat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('Kategori Cepat',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
         Wrap(
           spacing: 12,
           runSpacing: 12,
           children: [
-            _categoryTile(Icons.upload, 'Top Up', Colors.green),
-            _categoryTile(Icons.fastfood, 'Makan', Colors.orange),
-            _categoryTile(Icons.local_grocery_store, 'Jajan', Colors.purple),
-            _categoryTile(Icons.directions_bus, 'Transport', Colors.blue),
+            _categoryTile(Icons.upload, 'Top Up', Colors.green, 'Top Up'),
+            _categoryTile(Icons.fastfood, 'Makan', Colors.orange, 'Makan'),
+            _categoryTile(
+                Icons.local_grocery_store, 'Jajan', Colors.purple, 'Jajan'),
+            _categoryTile(
+                Icons.directions_bus, 'Transport', Colors.blue, 'Transport'),
           ],
         ),
       ],
     );
   }
 
-  Widget _categoryTile(IconData icon, String title, Color color) {
-    return Container(
-      width: 150,
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(backgroundColor: color.withOpacity(0.2), child: Icon(icon, color: color)),
-          const SizedBox(width: 12),
-          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600))),
-        ],
+  Widget _categoryTile(
+      IconData icon, String title, Color color, String category) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddTransactionScreen(
+              onTransactionAdded: _addTransaction,
+              preSelectedCategory: category,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 150,
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+                backgroundColor: color.withOpacity(0.2),
+                child: Icon(icon, color: color)),
+            const SizedBox(width: 12),
+            Expanded(
+                child: Text(title,
+                    style: const TextStyle(fontWeight: FontWeight.w600))),
+          ],
+        ),
       ),
     );
   }
@@ -306,7 +421,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
-            Text('Riwayat Transaksi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Riwayat Transaksi',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text('Lihat Semua', style: TextStyle(color: Colors.green)),
           ],
         ),
@@ -320,9 +436,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+        Text(title,
+            style: TextStyle(color: color, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        Text(amount, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(amount,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -332,12 +450,18 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: transaction.isIncome ? Colors.green[100] : Colors.red[100],
-          child: Icon(transaction.isIncome ? Icons.arrow_upward : Icons.arrow_downward, color: transaction.isIncome ? Colors.green : Colors.red),
+          backgroundColor:
+              transaction.isIncome ? Colors.green[100] : Colors.red[100],
+          child: Icon(
+              transaction.isIncome ? Icons.arrow_upward : Icons.arrow_downward,
+              color: transaction.isIncome ? Colors.green : Colors.red),
         ),
         title: Text(transaction.title),
-        subtitle: const Text('Hari ini • 10:30'),
-        trailing: Text(_formatRupiah(transaction.amount), style: TextStyle(color: transaction.isIncome ? Colors.green : Colors.red, fontWeight: FontWeight.bold)),
+        subtitle: Text(_formatTransactionTime(transaction.dateTime)),
+        trailing: Text(_formatRupiah(transaction.amount),
+            style: TextStyle(
+                color: transaction.isIncome ? Colors.green : Colors.red,
+                fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -347,6 +471,86 @@ class _TransactionData {
   final String title;
   final double amount;
   final bool isIncome;
+  final DateTime dateTime;
 
-  const _TransactionData(this.title, this.amount, this.isIncome);
+  _TransactionData(
+    this.title,
+    this.amount,
+    this.isIncome, {
+    DateTime? dateTime,
+  }) : dateTime = dateTime ?? DateTime.now();
+}
+
+class _HistoryScreen extends StatelessWidget {
+  final List<_TransactionData> transactions;
+
+  const _HistoryScreen({required this.transactions});
+
+  String _formatRupiah(double value) {
+    final formatted = value
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
+    return 'Rp $formatted';
+  }
+
+  String _formatTransactionTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final txDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final time = '$hour:$minute';
+
+    if (txDate == today) {
+      return 'Hari ini • $time';
+    } else if (txDate == today.subtract(const Duration(days: 1))) {
+      return 'Kemarin • $time';
+    } else {
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year} • $time';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Riwayat Transaksi')),
+      body: transactions.isEmpty
+          ? const Center(
+              child: Text('Belum ada transaksi'),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                final transaction = transactions[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: transaction.isIncome
+                          ? Colors.green[100]
+                          : Colors.red[100],
+                      child: Icon(
+                          transaction.isIncome
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                          color:
+                              transaction.isIncome ? Colors.green : Colors.red),
+                    ),
+                    title: Text(transaction.title),
+                    subtitle:
+                        Text(_formatTransactionTime(transaction.dateTime)),
+                    trailing: Text(_formatRupiah(transaction.amount),
+                        style: TextStyle(
+                            color: transaction.isIncome
+                                ? Colors.green
+                                : Colors.red,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                );
+              },
+            ),
+    );
+  }
 }

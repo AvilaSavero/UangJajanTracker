@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   static const routeName = '/add-transaction';
-  const AddTransactionScreen({super.key});
+  final Function(dynamic)? onTransactionAdded;
+  final String? preSelectedCategory;
+
+  const AddTransactionScreen({
+    super.key,
+    this.onTransactionAdded,
+    this.preSelectedCategory,
+  });
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -13,10 +20,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   bool _isIncome = false;
-  String _selectedCategory = 'Makan';
+  late String _selectedCategory;
   DateTime _selectedDate = DateTime.now();
 
   final List<String> _categories = ['Makan', 'Transport', 'Top Up', 'Jajan'];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategory = widget.preSelectedCategory ?? 'Makan';
+  }
 
   @override
   void dispose() {
@@ -27,6 +40,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   void _saveTransaction() {
+    final title = _titleController.text;
+    final amountText = _amountController.text;
+
+    if (title.isEmpty || amountText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Harap isi semua field')),
+      );
+      return;
+    }
+
+    final amount = double.tryParse(amountText) ?? 0;
+
+    if (widget.onTransactionAdded != null) {
+      widget.onTransactionAdded!({
+        'title': title,
+        'amount': amount,
+        'isIncome': _isIncome,
+      });
+    }
+
     Navigator.pop(context);
   }
 
@@ -71,7 +104,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text('Kategori', style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text('Kategori',
+                style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -89,7 +123,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               }).toList(),
             ),
             const SizedBox(height: 16),
-            const Text('Tipe Transaksi', style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text('Tipe Transaksi',
+                style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -98,7 +133,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     label: const Text('Pengeluaran'),
                     selected: !_isIncome,
                     selectedColor: Colors.red.shade100,
-                    onSelected: (selected) => setState(() => _isIncome = !selected),
+                    onSelected: (selected) =>
+                        setState(() => _isIncome = !selected),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -107,7 +143,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     label: const Text('Pemasukan'),
                     selected: _isIncome,
                     selectedColor: Colors.green.shade100,
-                    onSelected: (selected) => setState(() => _isIncome = selected),
+                    onSelected: (selected) =>
+                        setState(() => _isIncome = selected),
                   ),
                 ),
               ],
@@ -118,7 +155,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _pickDate,
-                    child: Text('Tanggal: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'),
+                    child: Text(
+                        'Tanggal: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'),
                   ),
                 ),
               ],
@@ -137,7 +175,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               onPressed: _saveTransaction,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Simpan Transaksi'),
             ),

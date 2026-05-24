@@ -5,7 +5,9 @@ class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
 
   String _formatRupiah(double value) {
-    final formatted = value.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
+    final formatted = value
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
     return 'Rp $formatted';
   }
 
@@ -16,18 +18,24 @@ class StatisticsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Analisis Keuangan', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          const Text('Analisis Keuangan',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          const Text('Lihat grafik, ringkasan bulanan, dan kategori teratas kamu.', style: TextStyle(color: Colors.black54)),
+          const Text(
+              'Lihat grafik, ringkasan bulanan, dan kategori teratas kamu.',
+              style: TextStyle(color: Colors.black54)),
           const SizedBox(height: 20),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Ringkasan Bulanan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Ringkasan Bulanan',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -43,7 +51,9 @@ class StatisticsScreen extends StatelessWidget {
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: const Center(child: Text('Grafik batang mingguan', style: TextStyle(color: Colors.black54))),
+                    child: const Center(
+                        child: Text('Grafik batang mingguan',
+                            style: TextStyle(color: Colors.black54))),
                   ),
                 ],
               ),
@@ -51,34 +61,44 @@ class StatisticsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Kategori Teratas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Kategori Teratas',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
-                  _categoryRow('Makan', 'Rp 25.000', Icons.fastfood, Colors.orange),
+                  _categoryRow(
+                      'Makan', 'Rp 25.000', Icons.fastfood, Colors.orange),
                   const SizedBox(height: 12),
-                  _categoryRow('Transport', 'Rp 12.000', Icons.directions_bus, Colors.blue),
+                  _categoryRow('Transport', 'Rp 12.000', Icons.directions_bus,
+                      Colors.blue),
                   const SizedBox(height: 12),
-                  _categoryRow('Jajan', 'Rp 8.500', Icons.local_grocery_store, Colors.purple),
+                  _categoryRow('Jajan', 'Rp 8.500', Icons.local_grocery_store,
+                      Colors.purple),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 20),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Statistik Lainnya', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Statistik Lainnya',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  _infoRow('Rata-rata pengeluaran harian', _formatRupiah(10000)),
+                  _infoRow(
+                      'Rata-rata pengeluaran harian', _formatRupiah(10000)),
                   const Divider(height: 24),
                   _infoRow('Saldo tersisa bulan ini', _formatRupiah(1800000)),
                 ],
@@ -101,9 +121,12 @@ class StatisticsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w700)),
+            Text(label,
+                style: TextStyle(color: color, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -113,9 +136,13 @@ class StatisticsScreen extends StatelessWidget {
   Widget _categoryRow(String title, String amount, IconData icon, Color color) {
     return Row(
       children: [
-        CircleAvatar(backgroundColor: color.withOpacity(0.15), child: Icon(icon, color: color)),
+        CircleAvatar(
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: color)),
         const SizedBox(width: 16),
-        Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600))),
+        Expanded(
+            child: Text(title,
+                style: const TextStyle(fontWeight: FontWeight.w600))),
         Text(amount, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],
     );
@@ -125,7 +152,8 @@ class StatisticsScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(child: Text(title, style: const TextStyle(color: Colors.black54))),
+        Expanded(
+            child: Text(title, style: const TextStyle(color: Colors.black54))),
         Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],
     );
