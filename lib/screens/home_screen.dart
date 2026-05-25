@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uang_jajan_tracker/utils/color_extensions.dart';
 import 'add_transaction_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
@@ -396,14 +397,14 @@ class _HomeScreenState extends State<HomeScreen> {
         width: 150,
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
+          color: color.withOpacitySafe(0.12),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
             CircleAvatar(
-                backgroundColor: color.withOpacity(0.2),
-                child: Icon(icon, color: color)),
+                backgroundColor: color.withOpacitySafe(0.2),
+              child: Icon(icon, color: color)),
             const SizedBox(width: 12),
             Expanded(
                 child: Text(title,

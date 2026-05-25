@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uang_jajan_tracker/utils/color_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:uang_jajan_tracker/transaction_service.dart';
 
@@ -160,7 +161,7 @@ class StatisticsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
+          color: color.withOpacitySafe(0.12),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Column(
@@ -182,8 +183,8 @@ class StatisticsScreen extends StatelessWidget {
     return Row(
       children: [
         CircleAvatar(
-            backgroundColor: color.withOpacity(0.15),
-            child: Icon(icon, color: color)),
+          backgroundColor: color.withOpacitySafe(0.15),
+          child: Icon(icon, color: color)),
         const SizedBox(width: 16),
         Expanded(
             child: Text(title,
