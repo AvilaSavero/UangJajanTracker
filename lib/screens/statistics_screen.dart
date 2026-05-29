@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uang_jajan_tracker/chart_widgets.dart';
 
 class StatisticsScreen extends StatelessWidget {
   static const routeName = '/statistics';
@@ -14,7 +15,12 @@ class StatisticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Statistik')),
+      appBar: AppBar(
+        title: const Text('Statistik'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -26,6 +32,7 @@ class StatisticsScreen extends StatelessWidget {
               style: TextStyle(color: Colors.black54)),
           const SizedBox(height: 20),
           Card(
+            elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
@@ -45,15 +52,12 @@ class StatisticsScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    height: 160,
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(18),
+                  SizedBox(
+                    height: 180,
+                    child: WeeklyBarChart(
+                      dailyExpenses: const [12000, 18000, 15000, 22000, 14000, 20000, 17000],
+                      weekDays: const ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
                     ),
-                    child: const Center(
-                        child: Text('Grafik batang mingguan',
-                            style: TextStyle(color: Colors.black54))),
                   ),
                 ],
               ),
@@ -61,6 +65,7 @@ class StatisticsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Card(
+            elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
@@ -71,6 +76,24 @@ class StatisticsScreen extends StatelessWidget {
                   const Text('Kategori Teratas',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 160,
+                    child: CategoryPieChart(
+                      categoryData: const {
+                        'Makan': 25000,
+                        'Transport': 12000,
+                        'Jajan': 8500,
+                        'Top Up': 50000,
+                      },
+                      categoryColors: const {
+                        'Makan': Colors.orange,
+                        'Transport': Colors.blue,
+                        'Jajan': Colors.purple,
+                        'Top Up': Colors.green,
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   _categoryRow(
                       'Makan', 'Rp 25.000', Icons.fastfood, Colors.orange),
@@ -86,6 +109,7 @@ class StatisticsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Card(
+            elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(

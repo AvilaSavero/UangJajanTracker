@@ -1,0 +1,117 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ApiService {
+  static String get baseUrl {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:3000/api/v1';
+    }
+    return 'http://localhost:3000/api/v1';
+  }
+
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
+  static Future<Map<String, dynamic>?> getCurrentUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('auth_user');
+    if (raw == null || raw.isEmpty) return null;
+    return jsonDecode(raw) as Map<String, dynamic>;
+  }
+
+  static Future<void> saveSession(
+      String token, Map<String, dynamic> user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
+    await prefs.setString('auth_user', jsonEncode(user));
+  }
+
+  static Future<void> clearSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('auth_user');
+  }
+
+  static Future<Map<String, dynamic>> login(
+      String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email.trim(), 'password': password}),
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 && body['success'] == true) {
+      final data = body['data'] as Map<String, dynamic>;
+      await saveSession(
+          data['token'] as String, data['user'] as Map<String, dynamic>);
+      return body;
+    }
+
+    throw Exception(body['message'] ?? 'Login gagal');
+  }
+
+  static Future<Map<String, dynamic>> getSummary(
+      {String month = '', String year = ''}) async {
+    final token = await getToken();
+    final uri =
+        Uri.parse('$baseUrl/transactions/summary').replace(queryParameters: {
+      if (month.isNotEmpty) 'month': month,
+      if (year.isNotEmpty) 'year': year,
+    });
+
+    final response = await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 && body['success'] == true) {
+      return body;
+    }
+
+    throw Exception(body['message'] ?? 'Gagal memuat ringkasan');
+  }
+
+  static Future<Map<String, dynamic>> createTransaction({
+    required String type,
+    required double amount,
+    required String title,
+    String? categoryId,
+    String? note,
+    required String date,
+  }) async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/transactions'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'type': type,
+        'amount': amount,
+        'title': title,
+        if (categoryId != null && categoryId.isNotEmpty)
+          'category_id': categoryId,
+        if (note != null && note.isNotEmpty) 'note': note,
+        'date': date,
+      }),
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 201 && body['success'] == true) {
+      return body;
+    }
+
+    throw Exception(body['message'] ?? 'Gagal menambah transaksi');
+  }
+}

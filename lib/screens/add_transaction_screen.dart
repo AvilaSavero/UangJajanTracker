@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   static const routeName = '/add-transaction';
@@ -39,9 +40,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     super.dispose();
   }
 
-  void _saveTransaction() {
-    final title = _titleController.text;
-    final amountText = _amountController.text;
+  Future<void> _saveTransaction() async {
+    final title = _titleController.text.trim();
+    final amountText = _amountController.text.trim();
 
     if (title.isEmpty || amountText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,16 +52,42 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
 
     final amount = double.tryParse(amountText) ?? 0;
-
-    if (widget.onTransactionAdded != null) {
-      widget.onTransactionAdded!({
-        'title': title,
-        'amount': amount,
-        'isIncome': _isIncome,
-      });
+    if (amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nominal harus lebih dari 0')),
+      );
+      return;
     }
 
-    Navigator.pop(context);
+    try {
+      await ApiService.createTransaction(
+        type: _isIncome ? 'income' : 'expense',
+        amount: amount,
+        title: title,
+        note: _noteController.text.trim(),
+        date: _selectedDate.toIso8601String().split('T').first,
+      );
+
+      if (widget.onTransactionAdded != null) {
+        widget.onTransactionAdded!({
+          'title': title,
+          'amount': amount,
+          'isIncome': _isIncome,
+        });
+      }
+
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Transaksi berhasil disimpan')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(error.toString().replaceFirst('Exception: ', ''))),
+      );
+    }
   }
 
   Future<void> _pickDate() async {
@@ -80,7 +107,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Transaksi')),
+      appBar: AppBar(
+        title: const Text('Tambah Transaksi'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -174,6 +206,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ElevatedButton(
               onPressed: _saveTransaction,
               style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade700,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),

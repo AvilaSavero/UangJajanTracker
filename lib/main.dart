@@ -19,7 +19,18 @@ class UangJajanTrackerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Uang Jajan Tracker',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade700),
+        primaryColor: Colors.green.shade700,
+        scaffoldBackgroundColor: Colors.grey.shade50,
+        appBarTheme: const AppBarTheme(
+          centerTitle: false,
+          elevation: 0,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 0.6,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          margin: EdgeInsets.zero,
+        ),
         useMaterial3: true,
       ),
       initialRoute: LoginScreen.routeName,

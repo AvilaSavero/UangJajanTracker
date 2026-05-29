@@ -14,11 +14,17 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil Saya')),
+      appBar: AppBar(
+        title: const Text('Profil Saya'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Card(
+            elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
@@ -64,6 +70,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Card(
+            elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
@@ -86,6 +93,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Card(
+            elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(

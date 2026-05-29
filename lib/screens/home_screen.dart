@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'add_transaction_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
@@ -13,8 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final double _spendingLimit = 1000000;
-  final double _balance = 2450000;
+  String _userName = 'Pengguna';
+  Map<String, dynamic>? _summaryData;
+  bool _isLoadingSummary = true;
 
   late List<_TransactionData> _transactions = [
     _TransactionData('Makan Siang', 20000, false),
@@ -24,6 +26,28 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSummary();
+  }
+
+  Future<void> _loadSummary() async {
+    try {
+      final user = await ApiService.getCurrentUser();
+      final summary = await ApiService.getSummary();
+      if (!mounted) return;
+      setState(() {
+        _userName = (user?['name'] as String?) ?? 'Pengguna';
+        _summaryData = summary;
+        _isLoadingSummary = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoadingSummary = false);
+    }
+  }
 
   void _addTransaction(dynamic data) {
     setState(() {
@@ -41,17 +65,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  double get _totalIncome => _transactions
-      .where((item) => item.isIncome)
-      .fold(0, (sum, item) => sum + item.amount);
+  double get _totalIncome =>
+      (_summaryData?['data']?['total_income'] ?? 0).toDouble();
 
-  double get _totalExpense => _transactions
-      .where((item) => !item.isIncome)
-      .fold(0, (sum, item) => sum + item.amount);
+  double get _totalExpense =>
+      (_summaryData?['data']?['total_expense'] ?? 0).toDouble();
+
+  double get _balanceValue =>
+      (_summaryData?['data']?['balance'] ?? 2450000).toDouble();
 
   double get _savedAmount => _totalIncome - _totalExpense;
 
-  double get _limitUsage => (_totalExpense / _spendingLimit).clamp(0, 1);
+  double get _monthlyLimit =>
+      (_summaryData?['data']?['spending_limit']?['monthly_limit'] ?? 1000000)
+          .toDouble();
+
+  double get _limitUsage => (_totalExpense / _monthlyLimit).clamp(0, 1);
 
   String get _limitStatus {
     if (_limitUsage < 0.5) {
@@ -124,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(
           builder: (context) => ProfileScreen(
             transactionCount: _transactions.length,
-            spendingLimit: _spendingLimit,
+            spendingLimit: _monthlyLimit,
           ),
         ),
       );
@@ -136,6 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -198,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildWelcomeCard() {
     return Card(
+      elevation: 0.6,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -206,13 +239,17 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Hai, Raja Vibe',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  Text('Lihat ringkasan pengeluaran dan limit hari ini.',
-                      style: TextStyle(color: Colors.black54)),
+                children: [
+                  Text('Hai, $_userName',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(
+                    _isLoadingSummary
+                        ? 'Memuat ringkasan terbaru...'
+                        : 'Lihat ringkasan pengeluaran dan limit hari ini.',
+                    style: const TextStyle(color: Colors.black54),
+                  ),
                 ],
               ),
             ),
@@ -230,33 +267,50 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBalanceCard() {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: Colors.green[700],
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      color: Colors.green[600],
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Saldo Anda',
-                style: TextStyle(color: Colors.white70, fontSize: 16)),
-            const SizedBox(height: 8),
-            Text(_formatRupiah(_balance),
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            const Text('Ringkasan mingguan',
-                style: TextStyle(color: Colors.white70, fontSize: 14)),
-            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Saldo',
+                        style: TextStyle(color: Colors.white70, fontSize: 15)),
+                    const SizedBox(height: 6),
+                    Text(_formatRupiah(_balanceValue),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800)),
+                  ],
+                ),
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.white.withOpacity(0.13),
+                  child: const Icon(Icons.account_balance_wallet,
+                      color: Colors.white, size: 32),
+                ),
+              ],
+            ),
+            const SizedBox(height: 22),
+            const Text('Ringkasan Mingguan',
+                style: TextStyle(color: Colors.white70, fontSize: 13)),
+            const SizedBox(height: 14),
             Container(
-              height: 96,
+              height: 60,
               decoration: BoxDecoration(
-                color: Colors.green[800],
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.white.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: const Center(
-                child: Text('Grafik kecil placeholder',
+                child: Text('Grafik placeholder',
                     style: TextStyle(color: Colors.white70)),
               ),
             ),
@@ -268,6 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSummaryCard() {
     return Card(
+      elevation: 0.6,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -298,6 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildLimitCard() {
     return Card(
+      elevation: 0.6,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -316,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Text('Limit Anda',
                         style: TextStyle(color: Colors.black54)),
                     const SizedBox(height: 4),
-                    Text(_formatRupiah(_spendingLimit),
+                    Text(_formatRupiah(_monthlyLimit),
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -447,7 +503,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _transactionTile(_TransactionData transaction) {
     return Card(
+      elevation: 0.6,
       margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor:
