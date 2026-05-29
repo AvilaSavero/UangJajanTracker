@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: Colors.white.withOpacity(0.13),
+                  backgroundColor: Colors.white.withValues(alpha: 0.13),
                   child: const Icon(Icons.account_balance_wallet,
                       color: Colors.white, size: 32),
                 ),
@@ -306,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.10),
+                color: Colors.white.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Center(
@@ -452,14 +452,14 @@ class _HomeScreenState extends State<HomeScreen> {
         width: 150,
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
+          color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
             CircleAvatar(
-                backgroundColor: color.withOpacity(0.2),
-                child: Icon(icon, color: color)),
+                backgroundColor: color.withValues(alpha: 0.2),
+              child: Icon(icon, color: color)),
             const SizedBox(width: 12),
             Expanded(
                 child: Text(title,

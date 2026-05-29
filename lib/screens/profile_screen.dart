@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uang_jajan_tracker/utils/color_extensions.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const routeName = '/profile';
@@ -121,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
+          color: color.withOpacitySafe(0.12),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Column(

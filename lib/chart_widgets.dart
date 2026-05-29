@@ -227,8 +227,8 @@ class ExpenseLineChart extends StatelessWidget {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  Colors.green.shade400.withOpacity(0.3),
-                  Colors.green.shade600.withOpacity(0.1),
+                  Colors.green.shade400.withValues(alpha: 0.3),
+                  Colors.green.shade600.withValues(alpha: 0.1),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

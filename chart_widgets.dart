@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:uang_jajan_tracker/utils/color_extensions.dart';
 
 class WeeklyBarChart extends StatelessWidget {
   final List<double> dailyExpenses;
@@ -227,8 +228,8 @@ class ExpenseLineChart extends StatelessWidget {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  Colors.green.shade400.withOpacity(0.3),
-                  Colors.green.shade600.withOpacity(0.1),
+                  Colors.green.shade400.withOpacitySafe(0.3),
+                  Colors.green.shade600.withOpacitySafe(0.1),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
