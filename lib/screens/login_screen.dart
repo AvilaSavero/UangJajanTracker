@@ -94,7 +94,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            'assets/images/foto/icon.png',
+                            'assets/images/custom_icons/fork.png',
+                            height: 48,
+                            fit: BoxFit.contain,
+                          ),
+                          const SizedBox(width: 16),
+                          Image.asset(
+                            'assets/images/custom_icons/car.png',
+                            height: 48,
+                            fit: BoxFit.contain,
+                          ),
+                          const SizedBox(width: 16),
+                          Image.asset(
+                            'assets/images/custom_icons/gamepad.png',
                             height: 48,
                             fit: BoxFit.contain,
                           ),
