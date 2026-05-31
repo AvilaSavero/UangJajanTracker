@@ -65,22 +65,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  double get _totalIncome =>
-      (_summaryData?['data']?['total_income'] ?? 0).toDouble();
+  double get _totalIncome {
+    final value = _summaryData?['data']?['total_income'];
+    return (value is num ? value : 0).toDouble();
+  }
 
-  double get _totalExpense =>
-      (_summaryData?['data']?['total_expense'] ?? 0).toDouble();
+  double get _totalExpense {
+    final value = _summaryData?['data']?['total_expense'];
+    return (value is num ? value : 0).toDouble();
+  }
 
-  double get _balanceValue =>
-      (_summaryData?['data']?['balance'] ?? 2450000).toDouble();
+  double get _balanceValue {
+    final value = _summaryData?['data']?['balance'];
+    return (value is num ? value : 2450000).toDouble();
+  }
 
   double get _savedAmount => _totalIncome - _totalExpense;
 
-  double get _monthlyLimit =>
-      (_summaryData?['data']?['spending_limit']?['monthly_limit'] ?? 1000000)
-          .toDouble();
+  double get _monthlyLimit {
+    final value = _summaryData?['data']?['spending_limit']?['monthly_limit'];
+    return (value is num ? value : 1000000).toDouble();
+  }
 
-  double get _limitUsage => (_totalExpense / _monthlyLimit).clamp(0, 1);
+  double get _limitUsage => (_monthlyLimit > 0 ? (_totalExpense / _monthlyLimit).clamp(0, 1) : 0);
 
   String get _limitStatus {
     if (_limitUsage < 0.5) {

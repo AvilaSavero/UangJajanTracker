@@ -30,10 +30,15 @@ class Transaction {
   }
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
+    final amount = map['amount'];
+    final amountDouble = (amount is num) 
+        ? amount.toDouble() 
+        : (amount is String ? double.tryParse(amount) ?? 0.0 : 0.0);
+    
     return Transaction(
       id: map['id'] as String,
       title: map['title'] as String,
-      amount: (map['amount'] as num).toDouble(),
+      amount: amountDouble,
       isIncome: (map['isIncome'] as int) == 1,
       category: map['category'] as String,
       note: map['note'] as String?,
