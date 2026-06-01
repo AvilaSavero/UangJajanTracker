@@ -7,6 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   static const String _envApiUrl =
       String.fromEnvironment('API_URL', defaultValue: '');
+  
+  // Railway remote URL
+  static const String _remoteUrl = 'https://uangjajantrackerproduction.up.railway.app/api/v1';
 
   static String get baseUrl {
     if (_envApiUrl.isNotEmpty) {
@@ -14,12 +17,12 @@ class ApiService {
     }
 
     if (kIsWeb) {
-      return 'http://localhost:3000/api/v1';
+      return _remoteUrl;
     }
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000/api/v1';
+      return _remoteUrl;
     }
-    return 'http://localhost:3000/api/v1';
+    return _remoteUrl;
   }
 
   static Future<String?> getToken() async {
