@@ -5,7 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
+  static const String _envApiUrl =
+      String.fromEnvironment('API_URL', defaultValue: '');
+
   static String get baseUrl {
+    if (_envApiUrl.isNotEmpty) {
+      return _envApiUrl;
+    }
+
     if (kIsWeb) {
       return 'http://localhost:3000/api/v1';
     }
@@ -42,21 +49,28 @@ class ApiService {
 
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email.trim(), 'password': password}),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email.trim(), 'password': password}),
+      );
 
-    final body = jsonDecode(response.body) as Map<String, dynamic>;
-    if (response.statusCode == 200 && body['success'] == true) {
-      final data = body['data'] as Map<String, dynamic>;
-      await saveSession(
-          data['token'] as String, data['user'] as Map<String, dynamic>);
-      return body;
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200 && body['success'] == true) {
+        final data = body['data'] as Map<String, dynamic>;
+        await saveSession(
+            data['token'] as String, data['user'] as Map<String, dynamic>);
+        return body;
+      }
+
+      throw Exception(body['message'] ?? 'Login gagal');
+    } on http.ClientException {
+      throw Exception(
+          'Tidak dapat terhubung ke server. Pastikan backend API berjalan di http://localhost:3000');
+    } on FormatException {
+      throw Exception('Respon server tidak valid. Cek backend API.');
     }
-
-    throw Exception(body['message'] ?? 'Login gagal');
   }
 
   static Future<Map<String, dynamic>> getSummary(
