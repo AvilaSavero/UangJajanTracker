@@ -9,11 +9,20 @@ const limitCtrl = require('../controllers/limitController');
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 router.post('/auth/register',
-  [body('name').notEmpty(), body('email').isEmail(), body('password').isLength({ min: 6 })],
+  [
+    body('name').notEmpty().withMessage('Nama lengkap wajib diisi'),
+    body('email').isEmail().withMessage('Email tidak valid'),
+    body('password')
+      .isLength({ min: 6 })
+      .withMessage('Password minimal 6 karakter'),
+  ],
   authCtrl.register
 );
 router.post('/auth/login',
-  [body('email').isEmail(), body('password').notEmpty()],
+  [
+    body('email').isEmail().withMessage('Email tidak valid'),
+    body('password').notEmpty().withMessage('Password wajib diisi'),
+  ],
   authCtrl.login
 );
 router.get('/auth/me', auth, authCtrl.me);

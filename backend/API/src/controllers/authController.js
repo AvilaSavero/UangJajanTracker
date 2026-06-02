@@ -10,7 +10,11 @@ const makeToken = (id) =>
 exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty())
-    return res.status(422).json({ success: false, errors: errors.array() });
+    return res.status(422).json({
+      success: false,
+      message: errors.array()[0].msg,
+      errors: errors.array(),
+    });
 
   const { name, email, password } = req.body;
   try {
@@ -48,7 +52,11 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty())
-    return res.status(422).json({ success: false, errors: errors.array() });
+    return res.status(422).json({
+      success: false,
+      message: errors.array()[0].msg,
+      errors: errors.array(),
+    });
 
   const { email, password } = req.body;
   try {

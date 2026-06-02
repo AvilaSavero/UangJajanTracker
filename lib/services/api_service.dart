@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,7 +8,8 @@ class ApiService {
   static const String _envApiUrl =
       String.fromEnvironment('API_URL', defaultValue: '');
 
-  static const String _defaultUrl = 'http://localhost:3000/api/v1';
+  static const String _defaultUrl =
+      'https://uangjajantrackerproduction.up.railway.app/api/v1';
 
   static String get baseUrl {
     return _envApiUrl.isNotEmpty ? _envApiUrl : _defaultUrl;
@@ -55,7 +57,10 @@ class ApiService {
         return body;
       }
 
-      throw Exception(body['message'] ?? 'Login gagal');
+      throw Exception(_parseErrorMessage(body, fallback: 'Login gagal'));
+    } on SocketException {
+      throw Exception(
+          'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
     } on http.ClientException {
       throw Exception(
           'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
@@ -83,13 +88,38 @@ class ApiService {
         return body;
       }
 
-      throw Exception(body['message'] ?? 'Registrasi gagal');
+      throw Exception(_parseErrorMessage(body, fallback: 'Registrasi gagal'));
+    } on SocketException {
+      throw Exception(
+          'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
     } on http.ClientException {
       throw Exception(
           'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
     } on FormatException {
       throw Exception('Respon server tidak valid. Cek konfigurasi backend/API_URL.');
     }
+  }
+
+  static String _parseErrorMessage(Map<String, dynamic> body,
+      {String fallback = 'Terjadi kesalahan'}) {
+    if (body['message'] is String && (body['message'] as String).isNotEmpty) {
+      return body['message'] as String;
+    }
+
+    if (body['errors'] is List) {
+      final errors = (body['errors'] as List)
+          .map((e) {
+            if (e is Map<String, dynamic>) {
+              return e['msg']?.toString() ?? e.toString();
+            }
+            return e.toString();
+          })
+          .where((msg) => msg.isNotEmpty)
+          .toList();
+      if (errors.isNotEmpty) return errors.join(', ');
+    }
+
+    return fallback;
   }
 
   static Future<Map<String, dynamic>> getSummary(
