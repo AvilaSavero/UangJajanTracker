@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import 'login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -27,15 +29,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           Card(
             elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: const Padding(
               padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Pengaturan Akun', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text('Pengaturan Akun',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
-                  Text('Atur profil, notifikasi, dan preferensi aplikasi kamu dengan mudah.'),
+                  Text(
+                      'Atur profil, notifikasi, dan preferensi aplikasi kamu dengan mudah.'),
                 ],
               ),
             ),
@@ -45,19 +51,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 8),
           Card(
             elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Column(
               children: [
                 SwitchListTile(
-                  secondary: const Icon(Icons.notifications_outlined, color: Colors.green),
+                  secondary: const Icon(Icons.notifications_outlined,
+                      color: Colors.green),
                   title: const Text('Notifikasi'),
-                  subtitle: const Text('Pengingat transaksi dan batas pengeluaran'),
+                  subtitle:
+                      const Text('Pengingat transaksi dan batas pengeluaran'),
                   value: _notificationsEnabled,
-                  onChanged: (value) => setState(() => _notificationsEnabled = value),
+                  onChanged: (value) =>
+                      setState(() => _notificationsEnabled = value),
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  secondary: const Icon(Icons.volume_up_outlined, color: Colors.orange),
+                  secondary: const Icon(Icons.volume_up_outlined,
+                      color: Colors.orange),
                   title: const Text('Suara'),
                   subtitle: const Text('Aktifkan suara saat interaksi penting'),
                   value: _soundEnabled,
@@ -67,9 +78,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SwitchListTile(
                   secondary: const Icon(Icons.fingerprint, color: Colors.blue),
                   title: const Text('Login Biometrik'),
-                  subtitle: const Text('Gunakan sidik jari atau wajah untuk login'),
+                  subtitle:
+                      const Text('Gunakan sidik jari atau wajah untuk login'),
                   value: _biometricEnabled,
-                  onChanged: (value) => setState(() => _biometricEnabled = value),
+                  onChanged: (value) =>
+                      setState(() => _biometricEnabled = value),
                 ),
               ],
             ),
@@ -79,7 +92,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 8),
           Card(
             elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: const Column(
               children: [
                 ListTile(
@@ -108,15 +122,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 20),
           Card(
             elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: const Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Tentang Aplikasi', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Tentang Aplikasi',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
                   SizedBox(height: 8),
-                  Text('Uang Jajan Tracker membantu kamu memantau pengeluaran, pemasukan, dan limit harian dengan lebih rapi dan teratur.'),
+                  Text(
+                      'Uang Jajan Tracker membantu kamu memantau pengeluaran, pemasukan, dan limit harian dengan lebih rapi dan teratur.'),
                 ],
               ),
             ),
@@ -125,14 +142,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () async {
+                // Logout with error handling
+                try {
+                  await ApiService.clearSession();
+                } catch (e) {
+                  print('Logout error (non-critical): $e');
+                }
+
+                if (!mounted) return;
+                Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+              },
               icon: const Icon(Icons.logout),
               label: const Text('Keluar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade50,
                 foregroundColor: Colors.red.shade700,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
               ),
             ),
           ),

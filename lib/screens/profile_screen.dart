@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:uang_jajan_tracker/utils/color_extensions.dart';
+import 'edit_profile_screen.dart';
+import 'security_screen.dart';
+import 'help_center_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const routeName = '/profile';
   final int transactionCount;
   final double spendingLimit;
-  
+
   const ProfileScreen({
     super.key,
     this.transactionCount = 0,
@@ -83,11 +86,17 @@ class ProfileScreen extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
-                  _profileAction(Icons.edit, 'Edit Profil'),
+                  _profileAction(Icons.edit, 'Edit Profil', () {
+                    Navigator.pushNamed(context, EditProfileScreen.routeName);
+                  }),
                   const Divider(),
-                  _profileAction(Icons.lock_outline, 'Keamanan Akun'),
+                  _profileAction(Icons.lock_outline, 'Keamanan Akun', () {
+                    Navigator.pushNamed(context, SecurityScreen.routeName);
+                  }),
                   const Divider(),
-                  _profileAction(Icons.help_outline, 'Pusat Bantuan'),
+                  _profileAction(Icons.help_outline, 'Pusat Bantuan', () {
+                    Navigator.pushNamed(context, HelpCenterScreen.routeName);
+                  }),
                 ],
               ),
             ),
@@ -147,16 +156,24 @@ class ProfileScreen extends StatelessWidget {
     return 'Rp $formatted';
   }
 
-  Widget _profileAction(IconData icon, String title) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.green),
-        const SizedBox(width: 16),
-        Expanded(
-            child: Text(title,
-                style: const TextStyle(fontWeight: FontWeight.w600))),
-        const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black26),
-      ],
+  Widget _profileAction(IconData icon, String title, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.green),
+            const SizedBox(width: 16),
+            Expanded(
+                child: Text(title,
+                    style: const TextStyle(fontWeight: FontWeight.w600))),
+            const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.black26),
+          ],
+        ),
+      ),
     );
   }
 }

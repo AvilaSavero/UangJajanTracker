@@ -34,14 +34,40 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ApiService.login(email, password);
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+      // Demo mode: bypass session save, just navigate
+      if (email.toLowerCase() == 'demo') {
+        if (!mounted) return;
+
+        // Direct navigation tanpa save session untuk avoid crash
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (!mounted) {
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        return;
+      }
+
+      // Real API login dengan error handling
+      try {
+        await ApiService.login(email, password);
+        if (!mounted) {
+          setState(() => _isLoading = false);
+          return;
+        }
+        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+      } catch (apiError) {
+        throw Exception('API Error: ${apiError.toString()}');
+      }
     } catch (error) {
-      if (!mounted) return;
-      _showMessage(error.toString().replaceFirst('Exception: ', ''));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        final errorMsg = error.toString().replaceFirst('Exception: ', '');
+        _showMessage(
+            'Error: $errorMsg\n\nTips: Gunakan email "demo" untuk test');
+      }
     }
   }
 
@@ -89,16 +115,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
-                      // Custom icon row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/foto/Icon.png',
-                            height: 48,
-                            fit: BoxFit.contain,
-                          ),
-                        ],
+                      // Custom icon - fallback untuk test
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.wallet, color: Colors.white),
                       ),
                       const SizedBox(height: 24),
                       TextFormField(
@@ -140,8 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(
-                              context, '/register');
+                          Navigator.pushNamed(context, '/register');
                         },
                         child: const Text('Belum punya akun? Daftar sekarang'),
                       ),
