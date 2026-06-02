@@ -1,28 +1,16 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String _envApiUrl =
       String.fromEnvironment('API_URL', defaultValue: '');
-  
-  // Railway remote URL
-  static const String _remoteUrl = 'https://uangjajantrackerproduction.up.railway.app/api/v1';
+
+  static const String _defaultUrl = 'http://localhost:3000/api/v1';
 
   static String get baseUrl {
-    if (_envApiUrl.isNotEmpty) {
-      return _envApiUrl;
-    }
-
-    if (kIsWeb) {
-      return _remoteUrl;
-    }
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return _remoteUrl;
-    }
-    return _remoteUrl;
+    return _envApiUrl.isNotEmpty ? _envApiUrl : _defaultUrl;
   }
 
   static Future<String?> getToken() async {
@@ -70,9 +58,37 @@ class ApiService {
       throw Exception(body['message'] ?? 'Login gagal');
     } on http.ClientException {
       throw Exception(
-          'Tidak dapat terhubung ke server. Pastikan backend API berjalan di http://localhost:3000');
+          'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
     } on FormatException {
-      throw Exception('Respon server tidak valid. Cek backend API.');
+      throw Exception('Respon server tidak valid. Cek konfigurasi backend/API_URL.');
+    }
+  }
+
+  static Future<Map<String, dynamic>> register(
+      String name, String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(
+          {'name': name.trim(), 'email': email.trim(), 'password': password},
+        ),
+      );
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 201 && body['success'] == true) {
+        final data = body['data'] as Map<String, dynamic>;
+        await saveSession(
+            data['token'] as String, data['user'] as Map<String, dynamic>);
+        return body;
+      }
+
+      throw Exception(body['message'] ?? 'Registrasi gagal');
+    } on http.ClientException {
+      throw Exception(
+          'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
+    } on FormatException {
+      throw Exception('Respon server tidak valid. Cek konfigurasi backend/API_URL.');
     }
   }
 
