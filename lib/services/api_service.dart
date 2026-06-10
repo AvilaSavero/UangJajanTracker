@@ -55,7 +55,7 @@ class ApiService {
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
 
-      if (response.statusCode >= 500) {
+      if (response.statusCode >= 500) { // 502 sudah termasuk di >= 500
         throw Exception('Server Railway sedang bermasalah (Error ${response.statusCode}). '
             'Silakan cek logs di Dashboard Railway.');
       }
@@ -94,7 +94,7 @@ class ApiService {
       debugPrint('Status Response: ${response.statusCode}');
       debugPrint('Body Response: ${response.body}');
 
-      if (response.statusCode >= 500) {
+      if (response.statusCode >= 500) { // 502 sudah termasuk di >= 500
         throw Exception('Server Railway sedang bermasalah (Error ${response.statusCode}). '
             'Silakan cek logs di Dashboard Railway.');
       }

@@ -4,7 +4,7 @@ const migrate = async () => {
   let conn;
   try {
     conn = await pool.getConnection();
-    console.log('Menjalankan migrasi database...');
+    console.log('Menjalankan migrasi database....');
 
     // Tabel users
     await conn.query(`

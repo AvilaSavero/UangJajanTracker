@@ -246,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+<<<<<<< HEAD
                 children: [
                   Text('Hai, $_userName',
                       style: const TextStyle(
@@ -257,6 +258,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         : 'Lihat ringkasan pengeluaran dan limit hari ini.',
                     style: const TextStyle(color: Colors.black54),
                   ),
+=======
+                children: const [
+                  Text('Hai, User', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text('Lihat ringkasan pengeluaran dan limit hari ini.', style: TextStyle(color: Colors.black54)),
+>>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
                 ],
               ),
             ),
@@ -422,9 +429,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+<<<<<<< HEAD
         const Text('Kategori Cepat',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
+=======
+        const Text('Kategori Cepat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 14),
+>>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -441,6 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+<<<<<<< HEAD
   Widget _categoryTile(
       IconData icon, String title, Color color, String category) {
     return GestureDetector(
@@ -473,6 +486,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontWeight: FontWeight.w600))),
           ],
         ),
+=======
+  Widget _categoryTile(IconData icon, String title, Color color) {
+    return Container(
+      width: 150,
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(backgroundColor: color.withValues(alpha: 0.2), child: Icon(icon, color: color)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600))),
+        ],
+>>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
       ),
     );
   }
