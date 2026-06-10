@@ -60,5 +60,5 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (err) => {
   console.error('🛑 Uncaught Exception:', err);
-  process.exit(1); // Exit with failure to allow Railway to restart the service
+  process.exit(1); // Exit with failure to allow Railway to restart the services
 });
