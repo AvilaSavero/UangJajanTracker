@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter Chrome (Railway API)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "args": [
+        "--dart-define=API_URL=https://uangjajantrackerproduction.up.railway.app/api/v1"
+      ]
+    },
+    {
+      "name": "Flutter Windows (Railway API)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "windows",
+      "args": [
+        "--dart-define=API_URL=https://uangjajantrackerproduction.up.railway.app/api/v1"
+      ]
+    }
+  ]
+}

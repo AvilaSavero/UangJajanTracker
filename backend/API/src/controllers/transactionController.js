@@ -188,18 +188,22 @@ exports.summary = async (req, res) => {
       success: true,
       data: {
         period: { month: Number(m), year: Number(y), start, end },
-        balance,
-        total_income:  totals.total_income,
-        total_expense: totals.total_expense,
+        balance: Number(balance) || 0,
+        total_income:  Number(totals.total_income) || 0,
+        total_expense: Number(totals.total_expense) || 0,
         spending_limit: limit ? {
-          monthly_limit:   limit.monthly_limit,
-          daily_limit:     limit.daily_limit,
-          alert_threshold: limit.alert_threshold,
+          monthly_limit:   Number(limit.monthly_limit) || 0,
+          daily_limit:     Number(limit.daily_limit) || 0,
+          alert_threshold: Number(limit.alert_threshold) || 80,
           percentage_used: limit_percentage,
           status:          limit_status,
         } : null,
         recent_transactions: recent,
-        expense_by_category: by_category,
+        expense_by_category: by_category.map(cat => ({
+          ...cat,
+          total: Number(cat.total) || 0,
+          count: Number(cat.count) || 0,
+        })),
       },
     });
   } catch (err) {

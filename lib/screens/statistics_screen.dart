@@ -1,33 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:uang_jajan_tracker/chart_widgets.dart';
 
 class StatisticsScreen extends StatelessWidget {
   static const routeName = '/statistics';
   const StatisticsScreen({super.key});
 
   String _formatRupiah(double value) {
-    final formatted = value.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
+    final formatted = value
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
     return 'Rp $formatted';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Statistik')),
+      appBar: AppBar(
+        title: const Text('Statistik'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Analisis Keuangan', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          const Text('Analisis Keuangan',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          const Text('Lihat grafik, ringkasan bulanan, dan kategori teratas kamu.', style: TextStyle(color: Colors.black54)),
+          const Text(
+              'Lihat grafik, ringkasan bulanan, dan kategori teratas kamu.',
+              style: TextStyle(color: Colors.black54)),
           const SizedBox(height: 20),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 0.6,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Ringkasan Bulanan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Ringkasan Bulanan',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,13 +52,12 @@ class StatisticsScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    height: 160,
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(18),
+                  const SizedBox(
+                    height: 180,
+                    child: WeeklyBarChart(
+                      dailyExpenses: [12000, 18000, 15000, 22000, 14000, 20000, 17000],
+                      weekDays: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
                     ),
-                    child: const Center(child: Text('Grafik batang mingguan', style: TextStyle(color: Colors.black54))),
                   ),
                 ],
               ),
@@ -51,34 +65,64 @@ class StatisticsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 0.6,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Kategori Teratas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Kategori Teratas',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  const SizedBox(
+                    height: 160,
+                    child: CategoryPieChart(
+                      categoryData: {
+                        'Makan': 25000,
+                        'Transport': 12000,
+                        'Jajan': 8500,
+                        'Top Up': 50000,
+                      },
+                      categoryColors: {
+                        'Makan': Colors.orange,
+                        'Transport': Colors.blue,
+                        'Jajan': Colors.purple,
+                        'Top Up': Colors.green,
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 16),
-                  _categoryRow('Makan', 'Rp 25.000', Icons.fastfood, Colors.orange),
+                  _categoryRow(
+                      'Makan', 'Rp 25.000', Icons.fastfood, Colors.orange),
                   const SizedBox(height: 12),
-                  _categoryRow('Transport', 'Rp 12.000', Icons.directions_bus, Colors.blue),
+                  _categoryRow('Transport', 'Rp 12.000', Icons.directions_bus,
+                      Colors.blue),
                   const SizedBox(height: 12),
-                  _categoryRow('Jajan', 'Rp 8.500', Icons.local_grocery_store, Colors.purple),
+                  _categoryRow('Jajan', 'Rp 8.500', Icons.local_grocery_store,
+                      Colors.purple),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 20),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 0.6,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Statistik Lainnya', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Statistik Lainnya',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  _infoRow('Rata-rata pengeluaran harian', _formatRupiah(10000)),
+                  _infoRow(
+                      'Rata-rata pengeluaran harian', _formatRupiah(10000)),
                   const Divider(height: 24),
                   _infoRow('Saldo tersisa bulan ini', _formatRupiah(1800000)),
                 ],
@@ -101,9 +145,12 @@ class StatisticsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w700)),
+            Text(label,
+                style: TextStyle(color: color, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -113,9 +160,17 @@ class StatisticsScreen extends StatelessWidget {
   Widget _categoryRow(String title, String amount, IconData icon, Color color) {
     return Row(
       children: [
+<<<<<<< HEAD
+            CircleAvatar(
+            backgroundColor: color.withValues(alpha: 0.15),
+            child: Icon(icon, color: color)),
+=======
         CircleAvatar(backgroundColor: color.withValues(alpha: 0.15), child: Icon(icon, color: color)),
+>>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
         const SizedBox(width: 16),
-        Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600))),
+        Expanded(
+            child: Text(title,
+                style: const TextStyle(fontWeight: FontWeight.w600))),
         Text(amount, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],
     );
@@ -125,7 +180,8 @@ class StatisticsScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(child: Text(title, style: const TextStyle(color: Colors.black54))),
+        Expanded(
+            child: Text(title, style: const TextStyle(color: Colors.black54))),
         Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],
     );

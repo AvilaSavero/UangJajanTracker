@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_transaction_screen.dart';
 import 'screens/settings_screen.dart';
@@ -19,12 +20,24 @@ class UangJajanTrackerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Uang Jajan Tracker',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade700),
+        primaryColor: Colors.green.shade700,
+        scaffoldBackgroundColor: Colors.grey.shade50,
+        appBarTheme: const AppBarTheme(
+          centerTitle: false,
+          elevation: 0,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 0.6,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          margin: EdgeInsets.zero,
+        ),
         useMaterial3: true,
       ),
       initialRoute: LoginScreen.routeName,
       routes: {
         LoginScreen.routeName: (context) => const LoginScreen(),
+        RegisterScreen.routeName: (context) => const RegisterScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
         AddTransactionScreen.routeName: (context) => const AddTransactionScreen(),
         SettingsScreen.routeName: (context) => const SettingsScreen(),

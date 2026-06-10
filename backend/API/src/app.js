@@ -25,4 +25,18 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server berjalan di http://localhost:${PORT}`));
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server ready on port ${PORT}`);
+  console.log(`📡 Base URL: /api/v1`);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => server.close());
+
+// Tangkap error yang tidak terduga agar server tidak crash (502)
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});

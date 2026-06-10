@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -20,8 +22,33 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
-    Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _showMessage('Email dan password wajib diisi');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await ApiService.login(email, password);
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    } catch (error) {
+      if (!mounted) return;
+      _showMessage(error.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -40,7 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24)),
                 elevation: 8,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
@@ -50,7 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 8),
                       const Text(
                         'Uang Jajan Tracker',
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+                        style: TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.w800),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
@@ -60,6 +89,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
+                      // Custom icon row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/foto/Icon.png',
+                            height: 48,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -79,16 +120,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: _login,
+                        onPressed: _isLoading ? null : _login,
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade700,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: const Text('Masuk'),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white),
+                              )
+                            : const Text('Masuk'),
                       ),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, '/register');
+                        },
                         child: const Text('Belum punya akun? Daftar sekarang'),
                       ),
                     ],
