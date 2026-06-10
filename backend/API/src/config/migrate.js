@@ -77,21 +77,21 @@ const migrate = async () => {
     await conn.query(`
       INSERT INTO categories (id, name, type, icon, color, is_default)
       SELECT * FROM (
-        SELECT UUID(), 'Gaji',         'income',  'wallet',      '#10B981', 1 UNION ALL
-        SELECT UUID(), 'Top Up',       'income',  'plus-circle', '#3B82F6', 1 UNION ALL
-        SELECT UUID(), 'Bonus',        'income',  'gift',        '#8B5CF6', 1 UNION ALL
-        SELECT UUID(), 'Investasi',    'income',  'trending-up', '#F59E0B', 1 UNION ALL
-        SELECT UUID(), 'Makan',        'expense', 'utensils',    '#EF4444', 1 UNION ALL
-        SELECT UUID(), 'Transport',    'expense', 'car',         '#F97316', 1 UNION ALL
-        SELECT UUID(), 'Belanja',      'expense', 'shopping-bag', '#EC4899', 1 UNION ALL
-        SELECT UUID(), 'Hiburan',      'expense', 'gamepad',     '#A855F7', 1 UNION ALL
-        SELECT UUID(), 'Kesehatan',    'expense', 'heart',       '#14B8A6', 1 UNION ALL
-        SELECT UUID(), 'Tagihan',      'expense', 'file-text',   '#6366F1', 1 UNION ALL
-        SELECT UUID(), 'Lainnya',      'expense', 'more-horizontal', '#6B7280', 1
+        SELECT UUID() AS id, 'Gaji'      AS name, 'income'  AS type, 'wallet'           AS icon, '#10B981' AS color, 1 AS is_default UNION ALL
+        SELECT UUID(),        'Top Up',             'income',          'plus-circle',               '#3B82F6',          1               UNION ALL
+        SELECT UUID(),        'Bonus',              'income',          'gift',                      '#8B5CF6',          1               UNION ALL
+        SELECT UUID(),        'Investasi',          'income',          'trending-up',               '#F59E0B',          1               UNION ALL
+        SELECT UUID(),        'Makan',              'expense',         'utensils',                  '#EF4444',          1               UNION ALL
+        SELECT UUID(),        'Transport',          'expense',         'car',                       '#F97316',          1               UNION ALL
+        SELECT UUID(),        'Belanja',            'expense',         'shopping-bag',              '#EC4899',          1               UNION ALL
+        SELECT UUID(),        'Hiburan',            'expense',         'gamepad',                   '#A855F7',          1               UNION ALL
+        SELECT UUID(),        'Kesehatan',          'expense',         'heart',                     '#14B8A6',          1               UNION ALL
+        SELECT UUID(),        'Tagihan',            'expense',         'file-text',                 '#6366F1',          1               UNION ALL
+        SELECT UUID(),        'Lainnya',            'expense',         'more-horizontal',           '#6B7280',          1
       ) AS tmp
       WHERE NOT EXISTS (
-        SELECT name FROM categories WHERE is_default = 1 AND name = tmp.name
-      ) LIMIT 11;
+        SELECT 1 FROM categories WHERE is_default = 1 AND name = tmp.name
+      );
     `);
     console.log('✓ Default categories');
 
