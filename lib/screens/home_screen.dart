@@ -246,7 +246,6 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-<<<<<<< HEAD
                 children: [
                   Text('Hai, $_userName',
                       style: const TextStyle(
@@ -258,12 +257,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         : 'Lihat ringkasan pengeluaran dan limit hari ini.',
                     style: const TextStyle(color: Colors.black54),
                   ),
-=======
                 children: const [
                   Text('Hai, User', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
                   Text('Lihat ringkasan pengeluaran dan limit hari ini.', style: TextStyle(color: Colors.black54)),
->>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
                 ],
               ),
             ),
@@ -429,14 +426,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-<<<<<<< HEAD
         const Text('Kategori Cepat',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
-=======
         const Text('Kategori Cepat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 14),
->>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -453,7 +447,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-<<<<<<< HEAD
   Widget _categoryTile(
       IconData icon, String title, Color color, String category) {
     return GestureDetector(
@@ -486,7 +479,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontWeight: FontWeight.w600))),
           ],
         ),
-=======
   Widget _categoryTile(IconData icon, String title, Color color) {
     return Container(
       width: 150,
@@ -501,7 +493,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 12),
           Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600))),
         ],
->>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
       ),
     );
   }
@@ -575,19 +566,19 @@ class _TransactionData {
   }) : dateTime = dateTime ?? DateTime.now();
 }
 
-class _HistoryScreen extends StatelessWidget {
+class _HistoryScreen extends void StatelessWidget {
   final List<_TransactionData> transactions;
 
   const _HistoryScreen({required this.transactions});
 
-  String _formatRupiah(double value) {
+  String formatRupiah(double value) {
     final formatted = value
         .toStringAsFixed(0)
         .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
     return 'Rp $formatted';
   }
 
-  String _formatTransactionTime(DateTime dateTime) {
+  String formatTransactionTime(DateTime dateTime) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final txDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
@@ -634,8 +625,8 @@ class _HistoryScreen extends StatelessWidget {
                     ),
                     title: Text(transaction.title),
                     subtitle:
-                        Text(_formatTransactionTime(transaction.dateTime)),
-                    trailing: Text(_formatRupiah(transaction.amount),
+                        Text(formatTransactionTime(transaction.dateTime)),
+                    trailing: Text(formatRupiah(transaction.amount),
                         style: TextStyle(
                             color: transaction.isIncome
                                 ? Colors.green

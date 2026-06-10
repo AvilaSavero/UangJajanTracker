@@ -9,19 +9,21 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'money_tracker',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
+  queueLimit: 0, 
   timezone: '+07:00',
+  connectTimeout: 10000, // 10 seconds timeout for Railway stability
 });
 
 // Tambahkan log untuk mengecek koneksi saat startup
 pool.getConnection()
   .then(connection => {
-    console.log(`✅ Database connected successfully to: ${process.env.DB_NAME} on ${process.env.DB_HOST}`);
-    connection.release();
+    console.log(`✅ Database connected successfully: ${process.env.DB_NAME} at ${process.env.DB_HOST}:${process.env.DB_PORT}`);
+    connection.release(); // Release the connection after the test
   })
   .catch(err => {
-    console.error('❌ Database connection failed!');
-    console.error('Details:', err);
+    console.error('❌ Database connection failed! Check your Railway Environment Variables.');
+    console.error('Error Code:', err.code);
+    console.error('Fatal:', err.fatal);
   });
 
 module.exports = pool;

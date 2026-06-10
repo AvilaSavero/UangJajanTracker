@@ -160,13 +160,10 @@ class StatisticsScreen extends StatelessWidget {
   Widget _categoryRow(String title, String amount, IconData icon, Color color) {
     return Row(
       children: [
-<<<<<<< HEAD
             CircleAvatar(
             backgroundColor: color.withValues(alpha: 0.15),
             child: Icon(icon, color: color)),
-=======
         CircleAvatar(backgroundColor: color.withValues(alpha: 0.15), child: Icon(icon, color: color)),
->>>>>>> ce91b382f1c71a75b00c0a5ecb112b624ebea32d
         const SizedBox(width: 16),
         Expanded(
             child: Text(title,
