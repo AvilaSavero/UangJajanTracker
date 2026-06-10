@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
+const migrate = require('./config/migrate');
 
 try {
   require('express-async-errors');
@@ -35,13 +36,22 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server ready on port ${PORT}`);
-  console.log(`📡 Base URL: /api/v1`);
-});
 
-// Handle graceful shutdown
-process.on('SIGTERM', () => server.close());
+// Run migrations before starting the server
+migrate()
+  .then(() => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server ready on port ${PORT}`);
+      console.log(`📡 Base URL: /api/v1`);
+    });
+
+    // Handle graceful shutdown
+    process.on('SIGTERM', () => server.close());
+  })
+  .catch((err) => {
+    console.error('Failed to run migrations, server will not start:', err);
+    process.exit(1);
+  });
 
 // Tangkap error yang tidak terduga agar server tidak crash (502)
 process.on('unhandledRejection', (reason) => {
