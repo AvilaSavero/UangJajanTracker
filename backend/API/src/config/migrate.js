@@ -4,7 +4,7 @@ const migrate = async () => {
   let conn;
   try {
     conn = await pool.getConnection();
-    console.log('Menjalankan migrasi database....');
+    console.log('Running database migrations...');
 
     // Tabel users
     await conn.query(`
@@ -95,18 +95,16 @@ const migrate = async () => {
     `);
     console.log('✓ Default categories');
 
-    console.log('\n✅ Migrasi selesai!');
+    console.log('\n✅ Migrations complete!');
   } catch (err) {
-    console.error('❌ Migrasi gagal!');
+    console.error('❌ Migration failed!');
     console.error('Error details:', err);
+    throw err;
   } finally {
     if (conn) {
       conn.release();
     }
-    // Menutup pool koneksi agar proses node berakhir dengan bersih
-    await pool.end();
-    process.exit();
   }
 };
 
-migrate();
+module.exports = migrate;
