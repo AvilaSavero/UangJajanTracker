@@ -4,6 +4,7 @@ const migrate = async () => {
   let conn;
   try {
     conn = await pool.getConnection();
+    await conn.beginTransaction(); // Start a transaction for atomicity
     console.log('Menjalankan migrasi database....');
 
     // Tabel users
@@ -95,18 +96,23 @@ const migrate = async () => {
     `);
     console.log('✓ Default categories');
 
+    await conn.commit(); // Commit the transaction if all queries succeed
     console.log('\n✅ Migrasi selesai!');
   } catch (err) {
     console.error('❌ Migrasi gagal!');
     console.error('Error details:', err);
+    if (conn) await conn.rollback(); // Rollback on error
   } finally {
     if (conn) {
       conn.release();
     }
-    // Menutup pool koneksi agar proses node berakhir dengan bersih
-    await pool.end();
-    process.exit();
+    // Only close the pool and exit if run directly from command line
+    if (require.main === module) {
+      await pool.end();
+      process.exit();
+    }
   }
 };
 
-migrate();
+module.exports = migrate;
+if (require.main === module) migrate();
