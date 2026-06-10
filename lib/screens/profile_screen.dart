@@ -38,10 +38,10 @@ class ProfileScreen extends StatelessWidget {
                       child: const Icon(Icons.person,
                           size: 42, color: Colors.green)),
                   const SizedBox(width: 16),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text('Raja Vibe',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
@@ -97,11 +97,11 @@ class ProfileScreen extends StatelessWidget {
             elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+            child: const Padding(
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Tentang Aplikasi',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

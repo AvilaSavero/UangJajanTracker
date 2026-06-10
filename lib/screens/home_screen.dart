@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _summaryData;
   bool _isLoadingSummary = true;
 
-  late List<_TransactionData> _transactions = [
+  late final List<_TransactionData> _transactions = [
     _TransactionData('Makan Siang', 20000, false),
     _TransactionData('Top Up', 50000, true),
     _TransactionData('Jajan Online', 15000, false),
@@ -481,9 +481,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text('Riwayat Transaksi',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text('Lihat Semua', style: TextStyle(color: Colors.green)),
