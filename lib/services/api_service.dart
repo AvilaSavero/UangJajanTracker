@@ -51,9 +51,15 @@ class ApiService {
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email.trim(), 'password': password}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode >= 500) {
+        throw Exception('Server Railway sedang bermasalah (Error ${response.statusCode}). '
+            'Silakan cek logs di Dashboard Railway.');
+      }
+
       if (response.statusCode == 200 && body['success'] == true) {
         final data = body['data'] as Map<String, dynamic>;
         await saveSession(
@@ -87,6 +93,11 @@ class ApiService {
 
       debugPrint('Status Response: ${response.statusCode}');
       debugPrint('Body Response: ${response.body}');
+
+      if (response.statusCode >= 500) {
+        throw Exception('Server Railway sedang bermasalah (Error ${response.statusCode}). '
+            'Silakan cek logs di Dashboard Railway.');
+      }
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 201 && body['success'] == true) {
