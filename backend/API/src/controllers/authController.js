@@ -26,7 +26,12 @@ exports.register = async (req, res) => {
 
     // Buat spending_limit default
     const [user] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    await pool.query('INSERT INTO spending_limits (user_id) VALUES (?)', [user[0].id]);
+    try {
+      await pool.query('INSERT INTO spending_limits (user_id) VALUES (?)', [user[0].id]);
+    } catch (limitErr) {
+      console.log('Warning: Could not create spending limit:', limitErr.message);
+      // Continue anyway, spending_limit is optional
+    }
 
     const token = makeToken(user[0].id);
     res.status(201).json({

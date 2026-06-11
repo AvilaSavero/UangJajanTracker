@@ -7,6 +7,11 @@ const trxCtrl   = require('../controllers/transactionController');
 const catCtrl   = require('../controllers/categoryController');
 const limitCtrl = require('../controllers/limitController');
 
+// ─── HEALTH CHECK / WELCOME ──────────────────────────────────────────────────
+router.get('/', (req, res) => {
+  res.json({ success: true, message: 'Uang Jajan Tracker API v1 is running' });
+});
+
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 router.post('/auth/register',
   [body('name').notEmpty(), body('email').isEmail(), body('password').isLength({ min: 6 })],

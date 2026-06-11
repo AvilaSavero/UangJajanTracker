@@ -28,11 +28,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Card(
             elevation: 0.6,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+            child: const Padding(
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Pengaturan Akun', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
                   Text('Atur profil, notifikasi, dan preferensi aplikasi kamu dengan mudah.'),
@@ -80,8 +80,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Card(
             elevation: 0.6,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Column(
-              children: const [
+            child: const Column(
+              children: [
                 ListTile(
                   leading: Icon(Icons.person_outline, color: Colors.green),
                   title: Text('Profil Saya'),
@@ -109,11 +109,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Card(
             elevation: 0.6,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+            child: const Padding(
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Tentang Aplikasi', style: TextStyle(fontWeight: FontWeight.w600)),
                   SizedBox(height: 8),
                   Text('Uang Jajan Tracker membantu kamu memantau pengeluaran, pemasukan, dan limit harian dengan lebih rapi dan teratur.'),

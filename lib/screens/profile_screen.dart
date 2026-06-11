@@ -38,13 +38,11 @@ class ProfileScreen extends StatelessWidget {
                       child: const Icon(Icons.person,
                           size: 42, color: Colors.green)),
                   const SizedBox(width: 16),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Raja Vibe',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                      children: [
+                        Text('User', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         SizedBox(height: 6),
                         Text('raja.vibe@email.com',
                             style: TextStyle(color: Colors.black54)),
@@ -97,11 +95,11 @@ class ProfileScreen extends StatelessWidget {
             elevation: 0.6,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+            child: const Padding(
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Tentang Aplikasi',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -122,7 +120,7 @@ class ProfileScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacitySafe(0.12),
+          color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Column(

@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _summaryData;
   bool _isLoadingSummary = true;
 
-  late List<_TransactionData> _transactions = [
+  late final List<_TransactionData> _transactions = [
     _TransactionData('Makan Siang', 20000, false),
     _TransactionData('Top Up', 50000, true),
     _TransactionData('Jajan Online', 15000, false),
@@ -257,6 +257,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         : 'Lihat ringkasan pengeluaran dan limit hari ini.',
                     style: const TextStyle(color: Colors.black54),
                   ),
+                children: const [
+                  Text('Hai, User', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text('Lihat ringkasan pengeluaran dan limit hari ini.', style: TextStyle(color: Colors.black54)),
                 ],
               ),
             ),
@@ -425,6 +429,8 @@ class _HomeScreenState extends State<HomeScreen> {
         const Text('Kategori Cepat',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
+        const Text('Kategori Cepat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 14),
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -473,6 +479,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontWeight: FontWeight.w600))),
           ],
         ),
+  Widget _categoryTile(IconData icon, String title, Color color) {
+    return Container(
+      width: 150,
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(backgroundColor: color.withValues(alpha: 0.2), child: Icon(icon, color: color)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600))),
+        ],
       ),
     );
   }
@@ -481,9 +501,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text('Riwayat Transaksi',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text('Lihat Semua', style: TextStyle(color: Colors.green)),
@@ -546,19 +566,19 @@ class _TransactionData {
   }) : dateTime = dateTime ?? DateTime.now();
 }
 
-class _HistoryScreen extends StatelessWidget {
+class _HistoryScreen extends void StatelessWidget {
   final List<_TransactionData> transactions;
 
   const _HistoryScreen({required this.transactions});
 
-  String _formatRupiah(double value) {
+  String formatRupiah(double value) {
     final formatted = value
         .toStringAsFixed(0)
         .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
     return 'Rp $formatted';
   }
 
-  String _formatTransactionTime(DateTime dateTime) {
+  String formatTransactionTime(DateTime dateTime) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final txDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
@@ -605,8 +625,8 @@ class _HistoryScreen extends StatelessWidget {
                     ),
                     title: Text(transaction.title),
                     subtitle:
-                        Text(_formatTransactionTime(transaction.dateTime)),
-                    trailing: Text(_formatRupiah(transaction.amount),
+                        Text(formatTransactionTime(transaction.dateTime)),
+                    trailing: Text(formatRupiah(transaction.amount),
                         style: TextStyle(
                             color: transaction.isIncome
                                 ? Colors.green
