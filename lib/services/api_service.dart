@@ -1,16 +1,22 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String _envApiUrl =
       String.fromEnvironment('API_URL', defaultValue: '');
-
-  static const String _defaultUrl = 'http://localhost:3000/api/v1';
+  
+  // Railway remote URL
+  static const String _remoteUrl = 'https://uangjajantracker-production.up.railway.app/api/v1'; // Pastikan domain ini sesuai dashboard Railway
 
   static String get baseUrl {
-    return _envApiUrl.isNotEmpty ? _envApiUrl : _defaultUrl;
+    if (_envApiUrl.isNotEmpty) {
+      return _envApiUrl;
+    }
+
+    return _remoteUrl;
   }
 
   static Future<String?> getToken() async {
@@ -45,9 +51,15 @@ class ApiService {
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email.trim(), 'password': password}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode >= 500) { // 502 sudah termasuk di >= 500
+        throw Exception('Server Railway sedang bermasalah (Error ${response.statusCode}). '
+            'Silakan cek logs di Dashboard Railway.');
+      }
+
       if (response.statusCode == 200 && body['success'] == true) {
         final data = body['data'] as Map<String, dynamic>;
         await saveSession(
@@ -58,22 +70,34 @@ class ApiService {
       throw Exception(body['message'] ?? 'Login gagal');
     } on http.ClientException {
       throw Exception(
-          'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
+          'Tidak dapat terhubung ke server. Periksa koneksi internet atau status backend Railway.');
     } on FormatException {
-      throw Exception('Respon server tidak valid. Cek konfigurasi backend/API_URL.');
+      throw Exception('Respon server tidak valid. Cek backend API.');
     }
   }
 
   static Future<Map<String, dynamic>> register(
       String name, String email, String password) async {
     try {
+      debugPrint('Mencoba registrasi ke: $baseUrl/auth/register');
+      
       final response = await http.post(
         Uri.parse('$baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(
-          {'name': name.trim(), 'email': email.trim(), 'password': password},
-        ),
-      );
+        body: jsonEncode({
+          'name': name.trim(),
+          'email': email.trim(),
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      debugPrint('Status Response: ${response.statusCode}');
+      debugPrint('Body Response: ${response.body}');
+
+      if (response.statusCode >= 500) { // 502 sudah termasuk di >= 500
+        throw Exception('Server Railway sedang bermasalah (Error ${response.statusCode}). '
+            'Silakan cek logs di Dashboard Railway.');
+      }
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 201 && body['success'] == true) {
@@ -86,9 +110,9 @@ class ApiService {
       throw Exception(body['message'] ?? 'Registrasi gagal');
     } on http.ClientException {
       throw Exception(
-          'Tidak dapat terhubung ke server. Pastikan backend API berjalan atau set API_URL dengan alamat yang benar.');
+          'Tidak dapat terhubung ke server. Periksa koneksi internet atau status backend Railway.');
     } on FormatException {
-      throw Exception('Respon server tidak valid. Cek konfigurasi backend/API_URL.');
+      throw Exception('Respon server tidak valid. Cek backend API.');
     }
   }
 

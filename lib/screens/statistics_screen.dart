@@ -52,11 +52,11 @@ class StatisticsScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  SizedBox(
+                  const SizedBox(
                     height: 180,
                     child: WeeklyBarChart(
-                      dailyExpenses: const [12000, 18000, 15000, 22000, 14000, 20000, 17000],
-                      weekDays: const ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                      dailyExpenses: [12000, 18000, 15000, 22000, 14000, 20000, 17000],
+                      weekDays: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
                     ),
                   ),
                 ],
@@ -77,16 +77,16 @@ class StatisticsScreen extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  SizedBox(
+                  const SizedBox(
                     height: 160,
                     child: CategoryPieChart(
-                      categoryData: const {
+                      categoryData: {
                         'Makan': 25000,
                         'Transport': 12000,
                         'Jajan': 8500,
                         'Top Up': 50000,
                       },
-                      categoryColors: const {
+                      categoryColors: {
                         'Makan': Colors.orange,
                         'Transport': Colors.blue,
                         'Jajan': Colors.purple,
@@ -163,6 +163,7 @@ class StatisticsScreen extends StatelessWidget {
             CircleAvatar(
             backgroundColor: color.withValues(alpha: 0.15),
             child: Icon(icon, color: color)),
+        CircleAvatar(backgroundColor: color.withValues(alpha: 0.15), child: Icon(icon, color: color)),
         const SizedBox(width: 16),
         Expanded(
             child: Text(title,

@@ -5,6 +5,12 @@ Aplikasi Tracking uang digital - Projek PSAS
 https://github.com/AvilaSavero/UangJajanTracker.git
 
 # Nama Anggota
+- Arga Miftachul Alifta (04)
+- Avila Saver Iman (05)
+- Constantine Reiner Simanjuntak (07)
+- Rafif Arga Pratama (24)
+  
+=======
 - Arga Miftachul Alifta (Hacker - Front End)
 - Avila Savero Iman (Hacker - Back End) 
 - Constantine Rainer Simanjuntak (Hustler)
@@ -48,5 +54,6 @@ JWT_EXPIRES_IN=7d
 ```
 
 Jika kamu tidak punya database lokal dan ingin tetap pakai backend lokal, minta akses database teman dan sesuaikan `DB_HOST`, `DB_USER`, `DB_PASSWORD`, serta `DB_NAME`.
+
 
 

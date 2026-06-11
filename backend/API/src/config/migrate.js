@@ -1,9 +1,11 @@
 const pool = require('./database');
 
 const migrate = async () => {
-  const conn = await pool.getConnection();
+  let conn;
   try {
-    console.log('Menjalankan migrasi database...');
+    conn = await pool.getConnection();
+    await conn.beginTransaction(); // Start a transaction for atomicity
+    console.log('Menjalankan migrasi database....');
 
     // Tabel users
     await conn.query(`
@@ -74,28 +76,43 @@ const migrate = async () => {
 
     // Insert default categories
     await conn.query(`
-      INSERT IGNORE INTO categories (id, name, type, icon, color, is_default) VALUES
-        (UUID(), 'Gaji',         'income',  'wallet',      '#10B981', 1),
-        (UUID(), 'Top Up',       'income',  'plus-circle', '#3B82F6', 1),
-        (UUID(), 'Bonus',        'income',  'gift',        '#8B5CF6', 1),
-        (UUID(), 'Investasi',    'income',  'trending-up', '#F59E0B', 1),
-        (UUID(), 'Makan',        'expense', 'utensils',    '#EF4444', 1),
-        (UUID(), 'Transport',    'expense', 'car',         '#F97316', 1),
-        (UUID(), 'Belanja',      'expense', 'shopping-bag','#EC4899', 1),
-        (UUID(), 'Hiburan',      'expense', 'gamepad',     '#A855F7', 1),
-        (UUID(), 'Kesehatan',    'expense', 'heart',       '#14B8A6', 1),
-        (UUID(), 'Tagihan',      'expense', 'file-text',   '#6366F1', 1),
-        (UUID(), 'Lainnya',      'expense', 'more-horizontal','#6B7280', 1)
+      INSERT INTO categories (id, name, type, icon, color, is_default)
+      SELECT * FROM (
+        SELECT UUID() AS id, 'Gaji'      AS name, 'income'  AS type, 'wallet'           AS icon, '#10B981' AS color, 1 AS is_default UNION ALL
+        SELECT UUID(),        'Top Up',             'income',          'plus-circle',               '#3B82F6',          1               UNION ALL
+        SELECT UUID(),        'Bonus',              'income',          'gift',                      '#8B5CF6',          1               UNION ALL
+        SELECT UUID(),        'Investasi',          'income',          'trending-up',               '#F59E0B',          1               UNION ALL
+        SELECT UUID(),        'Makan',              'expense',         'utensils',                  '#EF4444',          1               UNION ALL
+        SELECT UUID(),        'Transport',          'expense',         'car',                       '#F97316',          1               UNION ALL
+        SELECT UUID(),        'Belanja',            'expense',         'shopping-bag',              '#EC4899',          1               UNION ALL
+        SELECT UUID(),        'Hiburan',            'expense',         'gamepad',                   '#A855F7',          1               UNION ALL
+        SELECT UUID(),        'Kesehatan',          'expense',         'heart',                     '#14B8A6',          1               UNION ALL
+        SELECT UUID(),        'Tagihan',            'expense',         'file-text',                 '#6366F1',          1               UNION ALL
+        SELECT UUID(),        'Lainnya',            'expense',         'more-horizontal',           '#6B7280',          1
+      ) AS tmp
+      WHERE NOT EXISTS (
+        SELECT 1 FROM categories WHERE is_default = 1 AND name = tmp.name
+      );
     `);
     console.log('✓ Default categories');
 
+    await conn.commit(); // Commit the transaction if all queries succeed
     console.log('\n✅ Migrasi selesai!');
   } catch (err) {
-    console.error('❌ Migrasi gagal:', err.message);
+    console.error('❌ Migration failed!');
+    console.error('Error details:', err);
+    if (conn) await conn.rollback(); // Rollback on error
   } finally {
-    conn.release();
-    process.exit();
+    if (conn) {
+      conn.release();
+    }
+    // Only close the pool and exit if run directly from command line
+    if (require.main === module) {
+      await pool.end();
+      process.exit();
+    }
   }
 };
 
-migrate();
+module.exports = migrate;
+if (require.main === module) migrate();
