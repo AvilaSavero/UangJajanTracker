@@ -12,11 +12,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _agreed = false;
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -35,12 +36,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showMessage('Semua field wajib diisi');
       return;
     }
-
     if (!_agreed) {
-      _showMessage('Setujui Terms of Service dan Privacy Policy terlebih dahulu');
+      _showMessage('Setujui Kebijakan Privasi terlebih dahulu');
       return;
     }
-
     setState(() => _isLoading = true);
     try {
       await ApiService.register(name, email, password);
@@ -55,163 +54,182 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.green.shade700, Colors.green.shade200],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24)),
-                elevation: 8,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Manajemen Keuangan',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Solusi Manajemen Keuangan',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _nameController,
-                        keyboardType: TextInputType.name,
-                        decoration: const InputDecoration(
-                          labelText: 'Nama Lengkap',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'Email Address',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Checkbox(
-                            value: _agreed,
-                            onChanged: (value) {
-                              setState(() {
-                                _agreed = value ?? false;
-                              });
-                            },
-                          ),
-                          const Expanded(
-                            child: Text(
-                              'Saya setuju dengan Terms of Service dan Privacy Policy.',
-                              style: TextStyle(color: Colors.black87),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: _isLoading ? null : _register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade700,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: _isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Colors.white),
-                              )
-                            : const Text('Buat Akun'),
-                      ),
-                      const SizedBox(height: 16),
-                      const Row(
-                        children: [
-                          Expanded(child: Divider()),
-                          SizedBox(width: 10),
-                          Text('OR REGISTER WITH',
-                              style: TextStyle(color: Colors.black54)),
-                          SizedBox(width: 10),
-                          Expanded(child: Divider()),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _socialButton(Icons.g_mobiledata, 'Google'),
-                          _socialButton(Icons.apple, 'Apple'),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(
-                              context, LoginScreen.routeName);
-                        },
-                        child: const Text('Sudah Punya Akun? Login'),
-                      ),
-                    ],
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 36),
+              // Header
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.account_balance_wallet, size: 52, color: Colors.green.shade700),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Buat Akun Baru',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.black87),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Daftar dan mulai kelola keuanganmu',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              ),
+              const SizedBox(height: 36),
+
+              // Name
+              _buildLabel('NAMA LENGKAP'),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _nameController,
+                keyboardType: TextInputType.name,
+                textCapitalization: TextCapitalization.words,
+                decoration: _inputDecoration('Masukkan nama lengkap', Icons.person_outline),
+              ),
+              const SizedBox(height: 18),
+
+              // Email
+              _buildLabel('EMAIL'),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: _inputDecoration('Masukkan email', Icons.mail_outline),
+              ),
+              const SizedBox(height: 18),
+
+              // Password
+              _buildLabel('PASSWORD'),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                decoration: _inputDecoration('Minimal 6 karakter', Icons.lock_outline).copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                    color: Colors.grey,
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
               ),
-            ),
+              const SizedBox(height: 20),
+
+              // Agreement
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Checkbox(
+                    value: _agreed,
+                    activeColor: Colors.green.shade700,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    onChanged: (val) => setState(() => _agreed = val ?? false),
+                  ),
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Saya setuju dengan ',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                        children: [
+                          TextSpan(
+                            text: 'Kebijakan Privasi',
+                            style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.bold),
+                          ),
+                          const TextSpan(text: ' dan '),
+                          TextSpan(
+                            text: 'Syarat Penggunaan',
+                            style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Register Button
+              ElevatedButton(
+                onPressed: _isLoading ? null : _register,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  elevation: 0,
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text('Buat Akun', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 20),
+
+              // Login Link
+              Center(
+                child: GestureDetector(
+                  onTap: () => Navigator.pushReplacementNamed(context, LoginScreen.routeName),
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Sudah punya akun? ',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      children: [
+                        TextSpan(
+                          text: 'Masuk sekarang',
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _socialButton(IconData icon, String label) {
-    return OutlinedButton.icon(
-      onPressed: () {},
-      icon: Icon(icon, color: Colors.black87),
-      label: Text(label, style: const TextStyle(color: Colors.black87)),
-      style: OutlinedButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        side: const BorderSide(color: Colors.black26),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+  Widget _buildLabel(String label) {
+    return Text(
+      label,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: Colors.grey[400]),
+      prefixIcon: Icon(icon, color: Colors.grey[400], size: 20),
+      filled: true,
+      fillColor: Colors.grey[100],
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide.none,
       ),
     );
   }

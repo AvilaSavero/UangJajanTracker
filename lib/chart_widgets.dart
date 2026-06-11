@@ -21,7 +21,7 @@ class WeeklyBarChart extends StatelessWidget {
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
             getTooltipColor: (_) => Colors.blueGrey,
-            tooltipRoundedRadius: 8,
+            tooltipBorderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
         ),
         titlesData: FlTitlesData(

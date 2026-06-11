@@ -1,150 +1,187 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import 'login_screen.dart';
+import 'edit_profile_screen.dart';
+import 'security_screen.dart';
+import 'language_screen.dart';
+import 'accessibility_screen.dart';
+import 'help_center_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'account_settings_screen.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   static const routeName = '/settings';
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notificationsEnabled = true;
-  bool _soundEnabled = true;
-  bool _biometricEnabled = false;
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Pengaturan'),
-        backgroundColor: Colors.green.shade700,
-        foregroundColor: Colors.white,
+        title: const Text('Pengaturan', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: false,
         elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         children: [
-          Card(
-            elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: const Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Pengaturan Akun', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  Text('Atur profil, notifikasi, dan preferensi aplikasi kamu dengan mudah.'),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          _sectionTitle('Preferensi'),
           const SizedBox(height: 8),
-          Card(
-            elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Column(
-              children: [
-                SwitchListTile(
-                  secondary: const Icon(Icons.notifications_outlined, color: Colors.green),
-                  title: const Text('Notifikasi'),
-                  subtitle: const Text('Pengingat transaksi dan batas pengeluaran'),
-                  value: _notificationsEnabled,
-                  onChanged: (value) => setState(() => _notificationsEnabled = value),
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  secondary: const Icon(Icons.volume_up_outlined, color: Colors.orange),
-                  title: const Text('Suara'),
-                  subtitle: const Text('Aktifkan suara saat interaksi penting'),
-                  value: _soundEnabled,
-                  onChanged: (value) => setState(() => _soundEnabled = value),
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  secondary: const Icon(Icons.fingerprint, color: Colors.blue),
-                  title: const Text('Login Biometrik'),
-                  subtitle: const Text('Gunakan sidik jari atau wajah untuk login'),
-                  value: _biometricEnabled,
-                  onChanged: (value) => setState(() => _biometricEnabled = value),
-                ),
-              ],
-            ),
+          _buildMenuItem(
+            context,
+            icon: Icons.person_outline,
+            iconBg: Colors.green.shade50,
+            iconColor: Colors.green.shade700,
+            title: 'Edit Profil',
+            subtitle: 'Ubah nama, foto, dan limit pengeluaran',
+            routeName: EditProfileScreen.routeName,
           ),
-          const SizedBox(height: 20),
-          _sectionTitle('Akun & Bantuan'),
-          const SizedBox(height: 8),
-          Card(
-            elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: const Column(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.person_outline, color: Colors.green),
-                  title: Text('Profil Saya'),
-                  subtitle: Text('Lihat dan edit data akun kamu'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                ),
-                Divider(height: 1),
-                ListTile(
-                  leading: Icon(Icons.lock_outline, color: Colors.orange),
-                  title: Text('Keamanan'),
-                  subtitle: Text('Ganti password dan pengaturan privasi'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                ),
-                Divider(height: 1),
-                ListTile(
-                  leading: Icon(Icons.help_outline, color: Colors.blue),
-                  title: Text('Pusat Bantuan'),
-                  subtitle: Text('FAQ, kontak support, dan panduan aplikasi'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                ),
-              ],
-            ),
+          _buildMenuItem(
+            context,
+            icon: Icons.lock_outline,
+            iconBg: Colors.blue.shade50,
+            iconColor: Colors.blue.shade700,
+            title: 'Keamanan Akun',
+            subtitle: 'Password, biometrik, dan aktivitas login',
+            routeName: SecurityScreen.routeName,
           ),
-          const SizedBox(height: 20),
-          Card(
-            elevation: 0.6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Tentang Aplikasi', style: TextStyle(fontWeight: FontWeight.w600)),
-                  SizedBox(height: 8),
-                  Text('Uang Jajan Tracker membantu kamu memantau pengeluaran, pemasukan, dan limit harian dengan lebih rapi dan teratur.'),
-                ],
-              ),
-            ),
+          _buildMenuItem(
+            context,
+            icon: Icons.language,
+            iconBg: Colors.orange.shade50,
+            iconColor: Colors.orange.shade700,
+            title: 'Pilihan Bahasa',
+            subtitle: 'Bahasa Indonesia / English',
+            routeName: LanguageScreen.routeName,
           ),
+          _buildMenuItem(
+            context,
+            icon: Icons.accessibility_new,
+            iconBg: Colors.purple.shade50,
+            iconColor: Colors.purple.shade700,
+            title: 'Aksesibilitas',
+            subtitle: 'Mode gelap dan penyesuaian visual',
+            routeName: AccessibilityScreen.routeName,
+          ),
+          _buildMenuItem(
+            context,
+            icon: Icons.help_outline,
+            iconBg: Colors.teal.shade50,
+            iconColor: Colors.teal.shade700,
+            title: 'Bantuan & Laporan',
+            subtitle: 'FAQ, kontak, dan pusat bantuan',
+            routeName: HelpCenterScreen.routeName,
+          ),
+          _buildMenuItem(
+            context,
+            icon: Icons.privacy_tip_outlined,
+            iconBg: Colors.indigo.shade50,
+            iconColor: Colors.indigo.shade700,
+            title: 'Kebijakan Privasi',
+            subtitle: 'Transparansi data dan hak pengguna',
+            routeName: PrivacyPolicyScreen.routeName,
+          ),
+          _buildMenuItem(
+            context,
+            icon: Icons.manage_accounts_outlined,
+            iconBg: Colors.red.shade50,
+            iconColor: Colors.red.shade700,
+            title: 'Atur Akun',
+            subtitle: 'Reset data atau hapus akun',
+            routeName: AccountSettingsScreen.routeName,
+          ),
+          const SizedBox(height: 24),
+          _buildLogoutButton(context),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.logout),
-              label: const Text('Keluar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade50,
-                foregroundColor: Colors.red.shade700,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _sectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+  Widget _buildMenuItem(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconBg,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required String routeName,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(14)),
+          child: Icon(icon, color: iconColor, size: 22),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+        trailing: Icon(Icons.chevron_right, color: Colors.grey[400]),
+        onTap: () => Navigator.pushNamed(context, routeName),
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.red.shade100,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(Icons.logout, color: Colors.red.shade700, size: 22),
+        ),
+        title: Text(
+          'Keluar',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.red.shade700),
+        ),
+        subtitle: Text('Keluar dari akun Anda', style: TextStyle(color: Colors.red.shade300, fontSize: 12)),
+        onTap: () async {
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Text('Keluar?'),
+              content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                  child: const Text('Keluar'),
+                ),
+              ],
+            ),
+          );
+          if (confirmed == true) {
+            await ApiService.clearSession();
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
+            }
+          }
+        },
+      ),
     );
   }
 }

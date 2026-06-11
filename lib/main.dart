@@ -6,6 +6,13 @@ import 'screens/add_transaction_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/edit_profile_screen.dart';
+import 'screens/security_screen.dart';
+import 'screens/language_screen.dart';
+import 'screens/accessibility_screen.dart';
+import 'screens/help_center_screen.dart';
+import 'screens/privacy_policy_screen.dart';
+import 'screens/account_settings_screen.dart';
 
 void main() {
   runApp(const UangJajanTrackerApp());
@@ -43,6 +50,14 @@ class UangJajanTrackerApp extends StatelessWidget {
         SettingsScreen.routeName: (context) => const SettingsScreen(),
         StatisticsScreen.routeName: (context) => const StatisticsScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),
+        // Settings sub-pages
+        EditProfileScreen.routeName: (context) => const EditProfileScreen(),
+        SecurityScreen.routeName: (context) => const SecurityScreen(),
+        LanguageScreen.routeName: (context) => const LanguageScreen(),
+        AccessibilityScreen.routeName: (context) => const AccessibilityScreen(),
+        HelpCenterScreen.routeName: (context) => const HelpCenterScreen(),
+        PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
+        AccountSettingsScreen.routeName: (context) => const AccountSettingsScreen(),
       },
     );
   }

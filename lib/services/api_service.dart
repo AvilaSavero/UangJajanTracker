@@ -174,4 +174,88 @@ class ApiService {
 
     throw Exception(body['message'] ?? 'Gagal menambah transaksi');
   }
+
+  static Future<Map<String, dynamic>> updateProfile({
+    required String name,
+    String? avatarUrl,
+    String? currency,
+    String? language,
+  }) async {
+    final token = await getToken();
+    final response = await http.put(
+      Uri.parse('$baseUrl/auth/profile'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'name': name.trim(),
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
+        if (currency != null) 'currency': currency,
+        if (language != null) 'language': language,
+      }),
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 && body['success'] == true) {
+      final prefs = await SharedPreferences.getInstance();
+      final updatedUser = body['data'] as Map<String, dynamic>;
+      await prefs.setString('auth_user', jsonEncode(updatedUser));
+      return body;
+    }
+
+    throw Exception(body['message'] ?? 'Gagal memperbarui profil');
+  }
+
+  static Future<Map<String, dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final token = await getToken();
+    final response = await http.put(
+      Uri.parse('$baseUrl/auth/password'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      }),
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 && body['success'] == true) {
+      return body;
+    }
+
+    throw Exception(body['message'] ?? 'Gagal mengubah password');
+  }
+
+  static Future<Map<String, dynamic>> updateLimit({
+    required double monthlyLimit,
+    double dailyLimit = 0,
+    double alertThreshold = 80,
+  }) async {
+    final token = await getToken();
+    final response = await http.put(
+      Uri.parse('$baseUrl/limits'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'monthly_limit': monthlyLimit,
+        'daily_limit': dailyLimit,
+        'alert_threshold': alertThreshold,
+      }),
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 && body['success'] == true) {
+      return body;
+    }
+
+    throw Exception(body['message'] ?? 'Gagal memperbarui limit');
+  }
 }
